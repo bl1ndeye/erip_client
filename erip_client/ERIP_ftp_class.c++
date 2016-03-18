@@ -8,7 +8,7 @@
 
 erip_ftp::erip_ftp()
 {
-    
+   // конструктор по умолчанию
     ftp= new ftplib();
     host="anyhost";
     login="moria";
@@ -19,6 +19,7 @@ erip_ftp::erip_ftp()
 
 erip_ftp::erip_ftp(string con_host, string con_login, string con_password) 
 {
+    // конструктор с инициализацией
     ftp= new ftplib();
     host=con_host;
     login=con_login;
