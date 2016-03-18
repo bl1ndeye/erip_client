@@ -28,18 +28,21 @@ erip_ftp::erip_ftp(string con_host, string con_login, string con_password)
 }
 
 erip_ftp::~erip_ftp() {
+    //деструктор фтп 
 ftp->Quit();
 delete ftp;
 }
 
 void erip_ftp::Set_Pref(string newpref)
 {
+    // установка префикса рабочей директории
     pref=newpref;
 }
 
 
 bool erip_ftp::delete_file(string file_name)
 {
+    // удаление файлов на фтп
    file_name="/"+file_name;
    return ftp->Delete(file_name.c_str()); 
 }
@@ -48,11 +51,11 @@ bool erip_ftp::delete_file(string file_name)
 
 bool erip_ftp::establish_connection()
 {
-    bool rez;
+    // установка соединения с фтп сервером
+        bool rez;
         ftp= new ftplib();
 	ftp->Connect(host.c_str());
 	rez=ftp->Login(login.c_str(), password.c_str());
-	//ftp->Dir(NULL, "/");
 	return rez;
 }
 

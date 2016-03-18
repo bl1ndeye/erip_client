@@ -57,14 +57,14 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/home/winter/work/libs/boost_1_59_0/bin.v2/libs/filesystem -lboost_filesystem -lboost_system -lmysqlcppconn
+LDLIBSOPTIONS=-lboost_filesystem -lboost_system -lmysqlcppconn
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk erip_client
 
 erip_client: ${OBJECTFILES}
-	${LINK.cc} -o erip_client ${OBJECTFILES} ${LDLIBSOPTIONS} -DNOSSL
+	${LINK.cc} -o erip_client ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/ERIP_ftp_class.o: ERIP_ftp_class.c++ 
 	${MKDIR} -p ${OBJECTDIR}
@@ -84,7 +84,7 @@ ${OBJECTDIR}/erip_daemon.o: erip_daemon.cpp
 ${OBJECTDIR}/ftplib.o: ftplib.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -I/usr/include/cppconn -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ftplib.o ftplib.cpp
+	$(COMPILE.cc) -O2 -I/usr/include/cppconn -DNOSSL -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/ftplib.o ftplib.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
