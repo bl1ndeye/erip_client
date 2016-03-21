@@ -239,7 +239,7 @@ bool erip_ftp::create_payment_request(sql::ResultSet *abons)
 
 bool erip_ftp::put_payment_request()
 {
-    path in_dir(pref+"/in/");
+    path in_dir(pref+"in/");
     path bak_file;
     directory_iterator end_iter;
     bool rez=false;
