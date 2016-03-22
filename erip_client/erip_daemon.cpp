@@ -104,7 +104,7 @@ bool erip_daemon::read_config() {
   } 
     else
         {
-          // добавить счетчик для исключения бесконечной
+          //  счетчик для исключения бесконечной
          // рекурсии
         rec_count++;
         
@@ -164,7 +164,6 @@ void erip_daemon::daemonize() {
                 now_tm = localtime(&now);
                 hour = now_tm->tm_hour;             
                 int min =now_tm->tm_min;
-               // cout << hour<<":::"<< min<<endl;
                 if (hour==1 && min<15 )
                 {
                    if ( ftp_lsv.create_payment_request(abills_lsv.Get_USER_ID_DEPOSIT_List()))
@@ -173,6 +172,7 @@ void erip_daemon::daemonize() {
                       if ( ftp_lsv.put_payment_request())
                       {
                         syslog(LOG_INFO," платежное требование сброшено на сервер");
+                        
                       } else
                       {
                           ftp_lsv.pr_w84upload=true;
@@ -201,6 +201,7 @@ void erip_daemon::daemonize() {
                        if (abills_lsv.Read_Execute_Payment_Registry("payment_regs"))
                           syslog(LOG_INFO,"Платежные документы обработы биллингом"); ;
                    }
+                
                 ftp_lsv.close_connection();
                 abills_lsv.Disconnect();
                 

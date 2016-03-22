@@ -243,16 +243,10 @@ bool erip_ftp::put_payment_request()
     path bak_file;
     directory_iterator end_iter;
     bool rez=false;
-    
-    //структура данных о файле 
-//    typedef multimap<time_t, path> result_set_t;
-//    result_set_t result_set;
-   
-    
-    
+  
     if ( exists(in_dir) && is_directory(in_dir))
     {
-        //cout<<"YEP MAZAFAKA we made it"<<endl;
+       
         for( directory_iterator dir_iter(in_dir) ; dir_iter != end_iter ; ++dir_iter)
             {
                 if (is_regular_file(dir_iter->status()) )
@@ -345,6 +339,7 @@ bool erip_ftp::get_payment_regs()
     }
     
     int local_size;
+   
     while(!file.eof())
     {
         file>>file_payment_reg_name;
