@@ -3,6 +3,10 @@
  * Author: winter
  *
  * Created on 23 ноября 2015 г., 20:10
+ * 
+ *основной модуль приложения.
+ *реализованы функции автоматической
+ * загрузки/выгрузки сообщений системы ЕРИП 
  */
 
 
@@ -25,7 +29,7 @@
 #include <string>
 #include <fstream>
 #include <unistd.h>
-// одули приложения
+// модули приложения
 #include "abills_mysql_class.h"
 #include "ERIP_ftp_class.h"
 // модуль для работы с xml
