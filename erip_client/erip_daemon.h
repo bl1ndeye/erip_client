@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
  * File:   erip_daemon.h
  * Author: winter
@@ -12,25 +6,6 @@
  */
 
 
-
-// config log
-// # /etc/rsyslog.d/30-erip_client.conf
-
-// ведение лога
-
-//#include <boost/log/core.hpp>
-//#include <boost/log/trivial.hpp>
-//#include <boost/log/expressions.hpp>
-//#include <boost/log/sinks/text_file_backend.hpp>
-//#include <boost/log/utility/setup/file.hpp>
-//#include <boost/log/utility/setup/common_attributes.hpp>
-//#include <boost/log/sources/severity_logger.hpp>
-//#include <boost/log/sources/record_ostream.hpp>
-//
-//namespace logging = boost::log;
-//namespace src = boost::log::sources;
-//namespace sinks = boost::log::sinks;
-//namespace keywords = boost::log::keywords;
 
 
 #ifndef ERIP_DAEMON_H
@@ -46,24 +21,14 @@
 #include <stdio.h>
 #include <syslog.h>
 #include <signal.h>
-
 #include <vector>
 #include <string>
 #include <fstream>
-
 #include <unistd.h>
-
-
-
-
-
-
-
-
-// мои либы
+// одули приложения
 #include "abills_mysql_class.h"
 #include "ERIP_ftp_class.h"
-// либа для работы с xml
+// модуль для работы с xml
 #include "pugixml.hpp"
 
 
@@ -71,16 +36,13 @@
 
 class erip_daemon {
     protected:
-        
-        
+              
         // демонизация
         void daemonize();
-
-       
+     
         // записать pid в файл
         void setpidfile();
-        // хрень какая то
-        static void sighandler(int signum);
+
         // класс для транспорта фтп
         erip_ftp ftp_lsv;
         // работа с базой биллинга abills
@@ -95,9 +57,14 @@ class erip_daemon {
         string pref;
         // конструктор по дефалту
         erip_daemon();
+        // задание параметров авторизаций, а также 
+        // создание в рабочей директории файла настроек.
         bool reconfigure();
+        // при запуске читает файл настроек авторизации из рабочей директории
         bool read_config();
-        int rec_count; // счетчик для исключения рекурсии
+        // счетчик для исключения бесонечной рекурсии при 
+        // чтении файла настроек
+        int rec_count; 
  
         
 };
