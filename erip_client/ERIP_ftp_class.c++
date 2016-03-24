@@ -28,18 +28,21 @@ erip_ftp::erip_ftp(string con_host, string con_login, string con_password)
 }
 
 erip_ftp::~erip_ftp() {
+    //деструктор фтп 
 ftp->Quit();
 delete ftp;
 }
 
 void erip_ftp::Set_Pref(string newpref)
 {
+    // установка префикса рабочей директории
     pref=newpref;
 }
 
 
 bool erip_ftp::delete_file(string file_name)
 {
+    // удаление файлов на фтп
    file_name="/"+file_name;
    return ftp->Delete(file_name.c_str()); 
 }
@@ -48,11 +51,11 @@ bool erip_ftp::delete_file(string file_name)
 
 bool erip_ftp::establish_connection()
 {
-    bool rez;
+    // установка соединения с фтп сервером
+        bool rez;
         ftp= new ftplib();
 	ftp->Connect(host.c_str());
 	rez=ftp->Login(login.c_str(), password.c_str());
-	//ftp->Dir(NULL, "/");
 	return rez;
 }
 
@@ -236,20 +239,14 @@ bool erip_ftp::create_payment_request(sql::ResultSet *abons)
 
 bool erip_ftp::put_payment_request()
 {
-    path in_dir(pref+"/in/");
+    path in_dir(pref+"in/");
     path bak_file;
     directory_iterator end_iter;
     bool rez=false;
-    
-    //структура данных о файле 
-//    typedef multimap<time_t, path> result_set_t;
-//    result_set_t result_set;
-   
-    
-    
+  
     if ( exists(in_dir) && is_directory(in_dir))
     {
-        //cout<<"YEP MAZAFAKA we made it"<<endl;
+       
         for( directory_iterator dir_iter(in_dir) ; dir_iter != end_iter ; ++dir_iter)
             {
                 if (is_regular_file(dir_iter->status()) )
@@ -342,6 +339,7 @@ bool erip_ftp::get_payment_regs()
     }
     
     int local_size;
+   
     while(!file.eof())
     {
         file>>file_payment_reg_name;

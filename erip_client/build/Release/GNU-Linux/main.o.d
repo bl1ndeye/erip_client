@@ -8,7 +8,7 @@ build/Release/GNU-Linux/main.o: main.cpp abills_mysql_class.h \
  /usr/include/cppconn/resultset.h \
  /usr/include/cppconn/prepared_statement.h \
  /usr/include/cppconn/statement.h ERIP_ftp_class.h ftplib.h erip_daemon.h \
- pugixml.hpp
+ pugixml.hpp pugiconfig.hpp
 
 abills_mysql_class.h:
 
@@ -47,3 +47,5 @@ ftplib.h:
 erip_daemon.h:
 
 pugixml.hpp:
+
+pugiconfig.hpp:

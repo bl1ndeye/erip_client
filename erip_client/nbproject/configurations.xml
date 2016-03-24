@@ -114,15 +114,11 @@
         </asmTool>
         <linkerTool>
           <output>erip_client</output>
-          <linkerAddLib>
-            <pElem>/home/winter/work/libs/boost_1_59_0/bin.v2/libs/filesystem</pElem>
-          </linkerAddLib>
           <linkerLibItems>
             <linkerLibLibItem>boost_filesystem</linkerLibLibItem>
             <linkerLibLibItem>boost_system</linkerLibLibItem>
             <linkerLibLibItem>mysqlcppconn</linkerLibLibItem>
           </linkerLibItems>
-          <commandLine>-DNOSSL</commandLine>
         </linkerTool>
       </compileType>
       <item path="ERIP_ftp_class.c++" ex="false" tool="1" flavor2="0">
@@ -138,6 +134,9 @@
       <item path="erip_daemon.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="ftplib.cpp" ex="false" tool="1" flavor2="0">
+        <ccTool>
+          <commandLine>-DNOSSL</commandLine>
+        </ccTool>
       </item>
       <item path="ftplib.h" ex="false" tool="3" flavor2="0">
       </item>

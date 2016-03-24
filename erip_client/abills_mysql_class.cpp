@@ -78,17 +78,8 @@ int abills_mysql::Connect()
 int abills_mysql::Disconnect()
 {
 try
-    {
-  //  driver = get_driver_instance();
-
-    ///  ошибка ОШИБОЧНАЯ
-    
-    
-    /// \return 
-  
+    {  
    con->close();
-   delete stmt;
-   delete con;
     }
     catch (sql::SQLException &e) 
     {
