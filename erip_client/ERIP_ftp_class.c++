@@ -61,6 +61,7 @@ bool erip_ftp::establish_connection()
 
 bool erip_ftp::close_connection()
 {
+     // закрытие соединения
     bool rez;
     rez=ftp->Quit();
     delete ftp;
@@ -70,6 +71,7 @@ bool erip_ftp::close_connection()
 
 bool erip_ftp::cdir(string cd)
 {
+    // изменение текущей  папки на фтп 
     bool rez;
     cd="/"+cd;
     const char *cdr=cd.c_str();
@@ -79,10 +81,12 @@ bool erip_ftp::cdir(string cd)
 }
 bool erip_ftp::get_file(string file_path)
 {
+    
     bool rez;
     file_path="/"+file_path;
     path local_file(file_path);
     string file_name;
+    // файл скачается в папку downloads в рабочей директории 
     file_name=pref+"/downloads/"+local_file.filename().generic_string();
     const char *cdr=file_path.c_str();
     rez= ftp->Get(file_name.c_str(),cdr,ftplib::ascii);
@@ -94,7 +98,8 @@ bool erip_ftp::get_out_files(string file_name)
     path local_file(file_name);
     
     string file;
-    
+    // скачивание файлов из папки out на фтп сервере 
+    // в папку out рабочей директории
     file=pref+"out/"+local_file.filename().generic_string();
     const char *cdr=file_name.c_str();
     rez= ftp->Get(file.c_str(),cdr,ftplib::ascii);
@@ -112,8 +117,6 @@ bool erip_ftp::get_out_files(string file_name)
         syslog(LOG_INFO,text.c_str());
     }
     closelog();
-    
-    
     return rez; 
 }
 
@@ -121,6 +124,7 @@ bool erip_ftp::get_out_files(string file_name)
 
 bool erip_ftp::put_file(string full_file_name,string file_path)
 {
+    // загрузка файла на фтп сервер
     bool rez;
     file_path="/"+file_path;
     const char *cdr=full_file_name.c_str();
@@ -147,9 +151,9 @@ bool erip_ftp::put_file(string full_file_name,string file_path)
 
 bool erip_ftp::put_file_relate(string file_name, string file_path) {
     bool rez;
+    // загрузка файла по относительному пути
     file_name=pref+"/"+file_name;
     file_path="/"+file_path;
-    cout<<file_name<<endl;
     const char *cdr=file_name.c_str();
     const char *cdr1=file_path.c_str();
     rez= ftp->Put(cdr,cdr1,ftplib::ascii);
@@ -162,17 +166,28 @@ bool erip_ftp::create_payment_request(sql::ResultSet *abons)
     bool rez;
     // создание заголовка сообщения
     string pr_caption; 
+    // версия сообщения
     int pr_message_version=4;
-    string pr_num;
+    
+    // имя файла , создается по текущей дате
+    // в формате ггггммдд
     string pr_file_name;
+    // код отправителя сообщения, выдается ЕРИП при заключении договора
     string pr_sender_code="32201898";
+    // имя сообщения , эквивалентно имени файла+ разрешение
     string pr_filename;
+    // время дата формирования сообщения
     string pr_datetime;
+    // колво строк в сообщении
     string pr_rowcount;
+    // УНП
     string pr_UNP;
+    // код банка 
     string pr_bank_code="782";
+    // рассчетный счет
     string pr_checking_account="3012112780000";
     // ^ пустое поле
+    // код валюты
     string pr_currency="974";
     //  ^ пустое поле
     char * buf=new char[40];
@@ -183,6 +198,7 @@ bool erip_ftp::create_payment_request(sql::ResultSet *abons)
      // const char * format=tmp.c_str(); 
     const char * format="%Y%m%d"; 
     strftime(buf,40,format,timeinfo);
+    // файл формируется в папке in рабочей директории
     pr_file_name="in/";
     pr_file_name+=buf;
     pr_filename+=buf;
@@ -191,16 +207,15 @@ bool erip_ftp::create_payment_request(sql::ResultSet *abons)
     strftime(buf,40,format,timeinfo);
     pr_datetime=buf;
     pr_caption=boost::lexical_cast<std::string>(pr_message_version);
+    // составление заголовка
     pr_caption+="^"+pr_sender_code+"^"+pr_filename+"^"+pr_datetime;
-    
     pr_rowcount=boost::lexical_cast<std::string>(abons->rowsCount());
     pr_UNP= "291351891";
     pr_caption+="^"+pr_rowcount+"^"+pr_UNP+"^"+pr_bank_code+"^"+pr_checking_account+"^1^"+pr_currency;
     
-//    cout<<pr_caption<<endl;
-    
-    
-    
+  
+   
+    // запись заголовка в файл
     ofstream abon_file(pr_file_name.c_str());
     abon_file<<pr_caption<<endl;
     // создание списка абонентов
@@ -211,7 +226,7 @@ bool erip_ftp::create_payment_request(sql::ResultSet *abons)
     while (abons->next())
     {
         n++;
-        
+        // формирование списка записей
         pr_abon=boost::lexical_cast<std::string>(n);
         pr_abon+="^";
         pr_abon+=abons->getString(1);
@@ -221,15 +236,16 @@ bool erip_ftp::create_payment_request(sql::ResultSet *abons)
 
         
         // инверсия +/-
-       // pr_num=boost::lexical_cast<std::string> (-1*abons->getInt(3));
+       // по формату сообщения если с минусом, значит у абонента положительный депозит
+      // если +, то задолженность.
         pr_abon+= boost::lexical_cast<std::string> (-1*abons->getInt(3));
         pr_abon+="^^"+pr_datetime+"^^^^^^^";
-     
         abon_file<<pr_abon<<endl;
       
     }
     abon_file.flush();
     abon_file.close();
+    // конвертация в cp1251 чтобы символы нормально определялись на стороне ЕРИП
     pr_file_name="iconv -f utf8 -t cp1251 "+pr_file_name+" -o "+pr_file_name;
     system(pr_file_name.c_str());
     delete abons;
@@ -243,20 +259,24 @@ bool erip_ftp::put_payment_request()
     path bak_file;
     directory_iterator end_iter;
     bool rez=false;
-  
+    // проверка на существование папки in
     if ( exists(in_dir) && is_directory(in_dir))
     {
        
         for( directory_iterator dir_iter(in_dir) ; dir_iter != end_iter ; ++dir_iter)
             {
+               // проверка всех файлов в папке 
                 if (is_regular_file(dir_iter->status()) )
                 {
+                    // Если есть сообщение 202
                     if (dir_iter->path().extension().string()==".202")
                        
                     {
+                        // то загружается на фтп 
                        if (put_file(dir_iter->path().string(),"in/"+dir_iter->path().filename().string()))
                        {
                           pr_w84upload=false;
+                          // если загрузилось успешно, то перемещается в папку /in/bak
                           bak_file= dir_iter->path().parent_path();
                           bak_file +="/bak/";
                           bak_file+=dir_iter->path().filename();
@@ -279,13 +299,14 @@ bool erip_ftp::put_payment_request()
                           }
                           else
                           {
+                               // запись в лог ошибки копирования
                                openlog("erip_ftp",0,LOG_LOCAL1);
                                string text;
                                text+="Файл ";text+=bak_file.string();
-                               text+=" не был скопирован.";
+                               text+=" не был скопирован в bak.";
                                syslog(LOG_INFO,text.c_str());
                                closelog();
-                              // добавить обработку ошибки
+                              
                           }             
                        }
                        else
@@ -301,6 +322,7 @@ bool erip_ftp::put_payment_request()
     }
     else
     {
+        // запись в лог, если папки in нет в рабочей директории
         openlog("erip_ftp",0,LOG_LOCAL1);
         string text;
         text+="Файл папки in не найден, или "; 
@@ -323,7 +345,7 @@ bool erip_ftp::get_payment_regs()
     if (exists(pr))
         remove(pr);
     
-
+  // получение списка файлов в папке /out/ фтп сервера
     ftp->Nlst("payment_regs","/out");
     ifstream file;
     file.open("payment_regs");
@@ -336,10 +358,8 @@ bool erip_ftp::get_payment_regs()
         text+="Список файлов сервера получен";     
         syslog(LOG_INFO,text.c_str());
         closelog();
-    }
-    
+    } 
     int local_size;
-   
     while(!file.eof())
     {
         file>>file_payment_reg_name;
@@ -358,6 +378,7 @@ bool erip_ftp::get_payment_regs()
                tmp=file_payment_reg_name;
             }
             path t (tmp);
+            // скачиваются файлы с расширениями 206 , 210 , 204
             if ((t.extension().string()==".206") || (t.extension().string()==".210")|| (t.extension().string()==".204"))
             {
                 rez= get_out_files(tmp.c_str());
@@ -377,9 +398,10 @@ bool erip_ftp::get_payment_regs()
                 local_size=file_size(local);
                 if (rez)
                 {
+                    // если файл был скачан , то удаляется с фтп
+                    // во избежание дублирования платежей.
                     delete_file(t.string());
                 }
-               
             }
             file_payment_reg_name="";
         }
