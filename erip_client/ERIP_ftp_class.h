@@ -1,14 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 /* 
  * File:   ERIP_ftp.h
  * Author: winter
  *
  * Created on 14 ноября 2015 г., 22:51
+ * 
+ * модуль для автоматизации обмена 
+ * сообщениями, отвечает за транспорт по фтп.
+ * Также формирует 202 сообщение (платежное требование, состояние счетов абонентов)
+ * 
  */
 
 
@@ -17,9 +18,7 @@
 
 #ifndef ERIP_FTP_H
 #define ERIP_FTP_H
-//#define BOOST_NO_CXX11_SCOPED_ENUMS
-
-
+// общие библиотеки
 #include <cstdlib>
 #include <iostream>
 #include <stdlib.h>
@@ -39,10 +38,10 @@
 
 // sql resultset
 #include <resultset.h>
+// библиотеки boost
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
-//#include <boost/assign/std/vector.hpp>
-// может куда нибудь захерачить вектор.
+
 
 
 
@@ -50,10 +49,11 @@
 #include <syslog.h>
 
 
-// need ftp lib 
+// используется сторонняя библиотека, котороую можно здесь скачать
 // https://github.com/mkulke/ftplibpp
 // ftplib needs ssl.h
 // in debian /usr/include/openssl/ssl.h
+// можно отключить параметром -dnossl
 
 
 #include "ftplib.h"
@@ -67,12 +67,10 @@ class erip_ftp
 public:
     
     // конструктор дефолтный
-    
-    erip_ftp();
-    
+    erip_ftp();    
     // конструктор для установки заданных параметров подключения
     erip_ftp(string con_host, string con_login, string con_password);
-    
+    // установка параметров авторизации на фтп сервере
     void  set_ftp_config(string con_host, string con_login, string con_password)
     {
         host=con_host;
@@ -81,9 +79,11 @@ public:
         pr_w84upload=false;
     }
    
-    
     // служебные функции
+    
+    // установка соединения с фтп сервером
     bool establish_connection();
+    // разрыв соединения 
     bool close_connection();
     
     //установление префикса (адрес рабочей директории)
@@ -116,7 +116,7 @@ public:
      
     // запись на ftp платежных требований
     bool put_payment_request();
-    
+    // получение сообщений 
     bool get_payment_regs();
     
     
@@ -124,15 +124,19 @@ public:
     // деструктор закрывает соединение
     ~erip_ftp();
     
-    
+    // флаг, отвечает за состояние зарузки сообщения 202
+    // если после формирования сообщения 202, оно не будет загружено
+    // на фтп сервер, то этот флаг становится true, и будет попытка загрузки 
+    // сообщения в последующих итерациях, до успешной загрузки на фтп сервер
     bool pr_w84upload;
 protected:
-    
+    // параметры авторизации на фтп сервере
     string host;
     string login;
     string password;
     // адрес рабочей директории
     string pref;
+    // указатель на объект работающий с фтп
     ftplib *ftp;
 };
 
