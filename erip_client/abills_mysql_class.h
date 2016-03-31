@@ -1,32 +1,31 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /* 
  * File:   abills_mysql_class.h
  * Author: winter
- *
+ * модуль работы с базой биллинга
+ * обработка сообщений об оплатах,
+ * функции выборок информации о пользователях,
+ * формирования списка пользователей
+ * 
  * Created on 12 ноября 2015 г., 14:15
  */
 
 #ifndef ABILLS_MYSQL_CLASS_H
 #define ABILLS_MYSQL_CLASS_H
 
-// common libs
+// общие библиотеки
 #include <cstdlib>
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctime>
 #include <alloca.h>
-
 #include <string>
-
+// библиотеки буст для конвертации int2str
+// и наоборот
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-// work with file libs
+// работа с файлами и файловой системой
 #include <sstream>
 #include <fstream>
 #include <boost/filesystem.hpp>
@@ -39,7 +38,7 @@
 #include <sys/types.h>     // fstat
 
 
-// mysql libs
+// mysql библиотеки
 #include <driver.h>
 #include <exception.h>
 #include <resultset.h>
@@ -56,7 +55,7 @@ using namespace std;
 class abills_mysql
 {
 public:
-    // конструктор тестовый
+    // конструктор по умолчанию
     abills_mysql();
     // конструктор с параметрами
     abills_mysql( sql::SQLString sethost,  sql::SQLString setlogin, sql::SQLString setpassword);
@@ -73,7 +72,10 @@ public:
    // дисконнект (thread init)
    int Disconnect();
    // при возникновении ошибок запись в лог
+   // запись информации об ошибке исключения
+   // сформированного самой библиотекой
    void Write_Log(sql::SQLException e);
+   // запись сформированного текста в лог
    void Write_Log_Text(string err_text);
    
    
